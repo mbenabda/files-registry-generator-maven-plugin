@@ -29,6 +29,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
         <!-- javaPoet (to generate java code files) -->
         <!-- documentation is at https://github.com/square/javapoet -->
         <dependency>

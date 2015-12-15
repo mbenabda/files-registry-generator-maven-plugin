@@ -1,9 +1,9 @@
-package com.mbenabda.maven.plugins.generators.viewsRegistry.threaded;
+package com.mbenabda.maven.plugins.generators.viewsRegistry;
 
 import com.google.common.base.Predicate;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
@@ -15,8 +15,10 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
     private final Predicate<Path> includedFileSpecification;
     private final String registryPackageName;
     private final String generatedClassName;
+    private final StringToIdentifierConverter stringToIdentifierConverter;
 
-    RegistryGeneratorDirectoryWorker(Path pathToInputFiles, Predicate<Path> includedFileSpecification, String registryPackageName, String generatedClassName) {
+    RegistryGeneratorDirectoryWorker(StringToIdentifierConverter stringToIdentifierConverter, Path pathToInputFiles, Predicate<Path> includedFileSpecification, String registryPackageName, String generatedClassName) {
+        this.stringToIdentifierConverter = stringToIdentifierConverter;
         this.pathToInputFiles = pathToInputFiles;
         this.includedFileSpecification = includedFileSpecification;
         this.registryPackageName = registryPackageName;
@@ -35,7 +37,7 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
 
             if(child.isDirectory() && isOk(dir, childPath)) {
                 RegistryGeneratorDirectoryWorker childWorker = new RegistryGeneratorDirectoryWorker(
-                        pathToInputFiles,
+                        new StringToIdentifierConverter(), childPath,
                         includedFileSpecification,
                         registryPackageName,
                         asClassName(childPath)
@@ -55,17 +57,19 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
 
     private boolean isOk(Path parent, Path child) {
         return !parent.toAbsolutePath().equals(child.toAbsolutePath()) // the . folder in unix systems
-                && !child.toAbsolutePath().toString().contains(parent.toAbsolutePath().toString()); // the .. folder in unix systems
-    }
-
-    private String asClassName(Path dir) {
-        String name = FileUtils.basename(dir.toFile().toString());
-        String firstLetter = "" + name.charAt(0);
-        return firstLetter.toUpperCase() + name.substring(1, name.length());
+                && !parent.toAbsolutePath().toString().startsWith(child.toAbsolutePath().toString()); // the .. folder in unix systems
     }
 
     private String asFieldName(Path file) {
-        return FileUtils.basename(FileUtils.removeExtension(file.toFile().toString())).toLowerCase();
+        return stringToIdentifierConverter.asFieldIdentifier(
+                FilenameUtils.getBaseName(file.toFile().toString())
+        );
+    }
+
+    private String asClassName(Path dir) {
+        return stringToIdentifierConverter.asClassIdentifier(
+                FilenameUtils.getBaseName(dir.toFile().toString())
+        );
     }
 
 }
