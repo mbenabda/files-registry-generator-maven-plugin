@@ -27,7 +27,7 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
     public TypeSpec call() throws Exception {
         Path dir = pathToInputFiles;
         TypeSpec.Builder currentClassBuilder = TypeSpec
-                .classBuilder(asClassName(dir))
+                .classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
 
         for(File child : dir.toFile().listFiles()) {
