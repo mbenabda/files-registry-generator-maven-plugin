@@ -15,6 +15,20 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
+/**
+ * usage:
+ RegistryBuilderVisitor registry = new RegistryBuilderVisitor(
+    registryPackageName,
+    registryClassName,
+    includes,
+    getLog()
+ );
+
+ Files.walkFileTree(pathToFiles, registry);
+
+ getLog().info("Generated java code : ");
+ getLog().info(registry.getGeneratedJavaCode());
+ */
 public class RegistryBuilderVisitor implements FileVisitor<Path> {
     private final String packageName;
     private final Log logger;

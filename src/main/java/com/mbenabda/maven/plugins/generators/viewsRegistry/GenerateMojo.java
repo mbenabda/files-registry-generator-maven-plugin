@@ -2,15 +2,13 @@ package com.mbenabda.maven.plugins.generators.viewsRegistry;
 
 
 import com.google.common.base.Predicate;
+import com.mbenabda.maven.plugins.generators.viewsRegistry.threaded.RegistryGenerator;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.FileUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,42 +30,42 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter(required = true)
     private String filesSuffix;
 
-
     @Parameter(defaultValue = "com.mbenabda.filesRegistry")
     private String registryPackageName;
 
+    @Parameter(defaultValue = "FilesRegistry")
+    private String registryClassName;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Path pathToFiles = Paths.get(this.pathToFiles);
-        final Predicate<Path> includes = new Predicate<Path>() {
-            @Override
-            public boolean apply(Path file) {
-                return FileUtils.filename(file.toString()).endsWith(filesSuffix);
-            }
-        };
-
-        String registryClassName = "FilesRegistry";
-
-        getLog().info("The plugin will access the " + filesSuffix + " files in " + pathToFiles + " to generate the registry class " + registryClassName + " registry in package " + registryPackageName + " at " + registryDirectory());
+        final Path pathToFiles = Paths.get(this.pathToFiles);
+        final Predicate<Path> includes = new FileHasIncludedSuffixPredicate(filesSuffix);
 
         if(pathToFiles.toFile().exists()) {
+            getLog().info(String.format(
+                    "The plugin will access the %s files in %s to generate the registry class %s at %s",
+                    filesSuffix,
+                    pathToFiles,
+                    registryPackageName + "." + registryClassName,
+                    registryDirectory()
+            ));
+
+            String javaCode = null;
             try {
-                RegistryBuilderVisitor registry = new RegistryBuilderVisitor(
-                        registryPackageName,
-                        registryClassName,
+                javaCode = new RegistryGenerator()
+                .generateRegistryJavaCode(
+                        pathToFiles,
                         includes,
-                        getLog()
+                        registryPackageName,
+                        registryClassName
                 );
-
-                Files.walkFileTree(pathToFiles, registry);
-
-                getLog().info("Generated java code : ");
-                getLog().info(registry.getGeneratedJavaCode());
-            } catch(IOException e) {
-                getLog().error(e);
+            } catch(Exception e) {
+                throw new MojoExecutionException("", e);
             }
+
+            getLog().info(javaCode);
         } else {
-            getLog().error("unable to find " + this.pathToFiles);
+            throw new MojoFailureException("Path " + pathToFiles + " does not exist.");
         }
     }
 
