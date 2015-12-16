@@ -1,5 +1,6 @@
-import com.mbenabda.maven.plugins.generators.viewsRegistry.FileHasIncludedSuffixPredicate;
-import com.mbenabda.maven.plugins.generators.viewsRegistry.RegistryClassCodeGenerator;
+import com.mbenabda.maven.plugins.generators.filesRegistry.FileHasIncludedSuffixPredicate;
+import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
+import com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet.RegistryClassCodeGenerator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext.iWantToGenerateARegistryClass;
 import static org.junit.Assert.assertEquals;
 
 public class RegistryClassCodeGeneratorTest {
@@ -22,12 +24,7 @@ public class RegistryClassCodeGeneratorTest {
         tmp.newFile("some.xml");
         tmp.newFile("three.html");
 
-        String javaCode = new RegistryClassCodeGenerator().generateClassCode(
-                tmp.getRoot().toPath(),
-                new FileHasIncludedSuffixPredicate(".html"),
-                "com.pkg.test",
-                "Registry"
-        );
+        RegistryGenerationContext generationContext = generationContext();
 
         assertEquals(
                 join("",
@@ -39,7 +36,7 @@ public class RegistryClassCodeGeneratorTest {
                             "public static final String one = \"one\";",
                         "}"
                 ),
-                inline(javaCode)
+                inline(new RegistryClassCodeGenerator().generateCode(generationContext))
         );
     }
 
@@ -48,13 +45,6 @@ public class RegistryClassCodeGeneratorTest {
         createFileInFolder(
                 tmp.newFolder("subDir"),
                 "aFileInSubDir.html"
-        );
-
-        String javaCode = new RegistryClassCodeGenerator().generateClassCode(
-                tmp.getRoot().toPath(),
-                new FileHasIncludedSuffixPredicate(".html"),
-                "com.pkg.test",
-                "Registry"
         );
 
         assertEquals(
@@ -67,8 +57,17 @@ public class RegistryClassCodeGeneratorTest {
                             "}",
                         "}"
                 ),
-                inline(javaCode)
+                inline(new RegistryClassCodeGenerator().generateCode(generationContext()))
         );
+    }
+
+    private RegistryGenerationContext generationContext() {
+        return iWantToGenerateARegistryClass()
+                .called("Registry")
+                .inPackage("com.pkg.test")
+                .fromTheFilesUnder(tmp.getRoot().toPath())
+                .thatMatch(new FileHasIncludedSuffixPredicate(".html"))
+                .please();
     }
 
     private File createFileInFolder(File dir, String fileName) throws IOException {

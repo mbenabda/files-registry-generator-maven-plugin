@@ -1,6 +1,7 @@
-package com.mbenabda.maven.plugins.generators.viewsRegistry;
+package com.mbenabda.maven.plugins.generators.filesRegistry;
 
 
+import com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet.RegistryClassCodeGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -11,9 +12,10 @@ import org.apache.maven.project.MavenProject;
 
 import javax.tools.JavaFileObject;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext.iWantToGenerateARegistryClass;
 
 @Mojo(name = "generate")
 public class GenerateMojo extends AbstractMojo {
@@ -46,21 +48,28 @@ public class GenerateMojo extends AbstractMojo {
                     filesSuffix,
                     pathToFiles,
                     registryPackageName + "." + registryClassName,
-                    outputDirectory()
+                    outputDirectory
             ));
 
+            if(!outputDirectory.exists()) {
+                outputDirectory.mkdirs();
+            }
+
             try {
-                String registryClassCode = new RegistryClassCodeGenerator()
-                        .generateClassCode(
-                                pathToFiles,
-                                new FileHasIncludedSuffixPredicate(filesSuffix),
-                                registryPackageName,
-                                registryClassName
-                        );
+                FileUtils.writeStringToFile(
+                        javaFileAt(outputDirectory.toPath(), registryClassName),
 
-                writeJavaCode(registryClassCode, outputDirectory());
+                        new RegistryClassCodeGenerator().generateCode(
+                                iWantToGenerateARegistryClass()
+                                        .called(registryClassName)
+                                        .inPackage(registryPackageName)
+                                        .fromTheFilesUnder(pathToFiles)
+                                        .thatMatch(new FileHasIncludedSuffixPredicate(filesSuffix))
+                                        .please()
+                        )
+                );
 
-                project.addCompileSourceRoot(outputDirectory().toAbsolutePath().toString());
+                project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
             } catch(Exception e) {
                 throw new MojoExecutionException("", e);
             }
@@ -69,30 +78,9 @@ public class GenerateMojo extends AbstractMojo {
         }
     }
 
-    private void writeJavaCode(String javaCode, Path outputDirectory) throws IOException {
-        getLog().info(javaCode);
-
-        File javaFile = outputDirectory
-                .resolve(registryClassName + JavaFileObject.Kind.SOURCE.extension)
+    private File javaFileAt(Path directory, String className) {
+        return directory
+                .resolve(className + JavaFileObject.Kind.SOURCE.extension)
                 .toFile();
-
-        FileUtils.writeStringToFile(javaFile, javaCode);
     }
-
-    private Path outputDirectory() {
-        Path targetRegistryClassDirectory = this.outputDirectory
-                .toPath()
-                .resolve(packageNameAsPath(registryPackageName));
-
-        if(!targetRegistryClassDirectory.toFile().exists()) {
-            targetRegistryClassDirectory.toFile().mkdirs();
-        }
-        return targetRegistryClassDirectory;
-    }
-
-    private Path packageNameAsPath(String packageName) {
-        String asPath = packageName.replaceAll("[.]", File.separator);
-        return Paths.get(asPath);
-    }
-
 }

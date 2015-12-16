@@ -40,6 +40,12 @@
             <version>2.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+
         <!-- javaPoet (to generate java code files) -->
         <!-- documentation is at https://github.com/square/javapoet -->
         <dependency>

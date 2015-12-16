@@ -1,4 +1,4 @@
-package com.mbenabda.maven.plugins.generators.viewsRegistry;
+package com.mbenabda.maven.plugins.generators.filesRegistry;
 
 import com.google.common.base.Predicate;
 import org.codehaus.plexus.util.FileUtils;
