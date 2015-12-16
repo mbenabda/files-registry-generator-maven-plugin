@@ -16,8 +16,10 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
     private final String registryPackageName;
     private final String generatedClassName;
     private final StringToIdentifierConverter stringToIdentifierConverter;
+    private final Path root;
 
-    RegistryGeneratorDirectoryWorker(StringToIdentifierConverter stringToIdentifierConverter, Path pathToInputFiles, Predicate<Path> includedFileSpecification, String registryPackageName, String generatedClassName) {
+    RegistryGeneratorDirectoryWorker(StringToIdentifierConverter stringToIdentifierConverter, Path root, Path pathToInputFiles, Predicate<Path> includedFileSpecification, String registryPackageName, String generatedClassName) {
+        this.root = root;
         this.stringToIdentifierConverter = stringToIdentifierConverter;
         this.pathToInputFiles = pathToInputFiles;
         this.includedFileSpecification = includedFileSpecification;
@@ -28,16 +30,21 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
     @Override
     public TypeSpec call() throws Exception {
         Path dir = pathToInputFiles;
+        Modifier[] modifiers = pathToInputFiles.equals(root)
+                ? new Modifier[] {Modifier.PUBLIC, Modifier.FINAL}
+                : new Modifier[] {Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
         TypeSpec.Builder currentClassBuilder = TypeSpec
                 .classBuilder(generatedClassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
+                .addModifiers(modifiers);
 
         for(File child : dir.toFile().listFiles()) {
             Path childPath = child.toPath();
 
             if(child.isDirectory() && isOk(dir, childPath)) {
                 RegistryGeneratorDirectoryWorker childWorker = new RegistryGeneratorDirectoryWorker(
-                        new StringToIdentifierConverter(), childPath,
+                        new StringToIdentifierConverter(),
+                        root,
+                        childPath,
                         includedFileSpecification,
                         registryPackageName,
                         asClassName(childPath)
@@ -47,6 +54,7 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
                 FieldSpec field = FieldSpec
                         .builder(String.class, asFieldName(childPath))
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                        .initializer("$S", asFieldValue(childPath))
                         .build();
                 currentClassBuilder.addField(field);
             }
@@ -54,6 +62,18 @@ class RegistryGeneratorDirectoryWorker implements Callable<TypeSpec> {
 
         return currentClassBuilder.build();
     }
+
+    private String asFieldValue(Path childPath) {
+        String pathFromRoot = childPath.toAbsolutePath().toString()
+                .replaceFirst(root.toAbsolutePath().toString(), "");
+
+        pathFromRoot = pathFromRoot.startsWith("/")
+                ? pathFromRoot.replaceFirst("/", "")
+                : pathFromRoot;
+
+        return FilenameUtils.removeExtension(pathFromRoot.toString());
+    }
+
 
     private boolean isOk(Path parent, Path child) {
         return !parent.toAbsolutePath().equals(child.toAbsolutePath()) // the . folder in unix systems

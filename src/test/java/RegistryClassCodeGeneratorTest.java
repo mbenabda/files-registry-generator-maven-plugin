@@ -33,10 +33,10 @@ public class RegistryClassCodeGeneratorTest {
                 join("",
                         "package com.pkg.test;",
                         "import java.lang.String;",
-                        "public static final class Registry {",
-                            "public static final String two;",
-                            "public static final String three;",
-                            "public static final String one;",
+                        "public final class Registry {",
+                            "public static final String two = \"two\";",
+                            "public static final String three = \"three\";",
+                            "public static final String one = \"one\";",
                         "}"
                 ),
                 inline(javaCode)
@@ -61,9 +61,9 @@ public class RegistryClassCodeGeneratorTest {
                 join("",
                         "package com.pkg.test;",
                         "import java.lang.String;",
-                        "public static final class Registry {",
+                        "public final class Registry {",
                             "public static final class SubDir {",
-                                "public static final String aFileInSubDir;",
+                                "public static final String aFileInSubDir = \"subDir/aFileInSubDir\";",
                             "}",
                         "}"
                 ),

@@ -13,6 +13,7 @@ public class RegistryClassCodeGenerator {
                 new RegistryGeneratorDirectoryWorker(
                         new StringToIdentifierConverter(),
                         pathToInputFiles,
+                        pathToInputFiles,
                         includedFileSpecification,
                         registryPackageName,
                         generatedClassName
