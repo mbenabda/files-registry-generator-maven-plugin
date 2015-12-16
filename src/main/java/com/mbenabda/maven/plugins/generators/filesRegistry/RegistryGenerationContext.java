@@ -6,6 +6,7 @@ import org.apache.commons.lang3.Validate;
 import java.nio.file.Path;
 
 public class RegistryGenerationContext {
+    private static final StringToIdentifierConverter STRING_TO_IDENTIFIER_CONVERTER = new StringToIdentifierConverter();
     private final Path filesRootDirectory;
     private final Predicate<Path> includedFilesSpecification;
     private final String registrySimpleClassName;
@@ -43,7 +44,7 @@ public class RegistryGenerationContext {
     }
 
     public StringToIdentifierConverter getJavaIdentifierNormalizer() {
-        return new StringToIdentifierConverter();
+        return STRING_TO_IDENTIFIER_CONVERTER;
     }
 
     public static class Builder {

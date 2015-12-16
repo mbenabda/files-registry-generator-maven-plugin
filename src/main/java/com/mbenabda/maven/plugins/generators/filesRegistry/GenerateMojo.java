@@ -13,7 +13,6 @@ import org.apache.maven.project.MavenProject;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext.iWantToGenerateARegistryClass;
 
@@ -40,12 +39,11 @@ public class GenerateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        final Path pathToFiles = Paths.get(this.pathToFiles);
+        final Path pathToFiles = project.getBasedir().toPath().resolve(this.pathToFiles);
 
         if(pathToFiles.toFile().exists()) {
             getLog().info(String.format(
-                    "The plugin will access the %s files in %s to generate the registry class %s at %s",
-                    filesSuffix,
+                    "Accessing %s to generate the registry class %s at %s",
                     pathToFiles,
                     registryPackageName + "." + registryClassName,
                     outputDirectory

@@ -24,8 +24,6 @@ public class RegistryClassCodeGeneratorTest {
         tmp.newFile("some.xml");
         tmp.newFile("three.html");
 
-        RegistryGenerationContext generationContext = generationContext();
-
         assertEquals(
                 join("",
                         "package com.pkg.test;",
@@ -36,7 +34,7 @@ public class RegistryClassCodeGeneratorTest {
                             "public static final String one = \"one\";",
                         "}"
                 ),
-                inline(new RegistryClassCodeGenerator().generateCode(generationContext))
+                inline(generatedCode())
         );
     }
 
@@ -57,8 +55,13 @@ public class RegistryClassCodeGeneratorTest {
                             "}",
                         "}"
                 ),
-                inline(new RegistryClassCodeGenerator().generateCode(generationContext()))
+                inline(generatedCode())
         );
+    }
+
+    private String generatedCode() throws Exception {
+        return new RegistryClassCodeGenerator()
+                        .generateCode(generationContext());
     }
 
     private RegistryGenerationContext generationContext() {
