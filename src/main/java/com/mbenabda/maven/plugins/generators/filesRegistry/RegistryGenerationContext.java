@@ -39,12 +39,13 @@ public class RegistryGenerationContext {
         Validate.isTrue(getJavaIdentifierNormalizer().isSimpleClassName(registrySimpleClassName));
     }
 
-    public static Builder iWantToGenerateARegistryClass() {
-        return new Builder();
-    }
-
     public StringToIdentifierConverter getJavaIdentifierNormalizer() {
         return STRING_TO_IDENTIFIER_CONVERTER;
+    }
+
+
+    public static Builder iWantToGenerateARegistryClass() {
+        return new Builder();
     }
 
     public static class Builder {
