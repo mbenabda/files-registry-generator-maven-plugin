@@ -15,7 +15,7 @@ class RegistryClassGenerator {
     private static final Modifier[] CLASS_MODIFIERS = new Modifier[] {Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
 
     private final RegistryGenerationContext context;
-    private FieldValueMaker fieldValueMaker;
+    private final FieldValueMaker fieldValueMaker;
 
     RegistryClassGenerator(RegistryGenerationContext context) {
         this.context = context;
@@ -41,7 +41,7 @@ class RegistryClassGenerator {
                                 childPath
                         )
                 );
-            } else if(context.getIncludedFilesSpecification().apply(childPath)) {;
+            } else if(context.getIncludedFilesSpecification().apply(childPath)) {
                 currentClassBuilder.addField(
                         new FieldGenerator(context, fieldValueMaker)
                                 .generateField(childPath)
