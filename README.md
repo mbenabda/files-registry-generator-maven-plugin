@@ -1,0 +1,1 @@
+Generate a java registry class hierarchy from files under a given directory
