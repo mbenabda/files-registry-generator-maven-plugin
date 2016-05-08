@@ -1,0 +1,4 @@
+build:
+  image: jamesdbloom/docker-java8-maven
+  commands:
+    - mvn clean install
