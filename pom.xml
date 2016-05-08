@@ -20,6 +20,20 @@
         <maven.plugin.version>3.4</maven.plugin.version>
     </properties>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>files-registry-maven-plugin-snapshots</id>
+            <url>http://maven.mbenabda.com/repository/files-registry-maven-plugin-snapshots/</url>
+        </snapshotRepository>
+
+        <repository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>files-registry-maven-plugin-releases</id>
+            <url>http://maven.mbenabda.com/repository/files-registry-maven-plugin-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <!-- maven plugin API -->
         <!-- documentation is at http://maven.apache.org/ref/3.3.9/maven-plugin-api/index.html -->
