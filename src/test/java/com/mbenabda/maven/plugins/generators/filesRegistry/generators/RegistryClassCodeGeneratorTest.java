@@ -28,7 +28,7 @@ public class RegistryClassCodeGeneratorTest {
     private static final String CLASS_PACKAGE = "com.mbenabda.tests.fileRegistry";
 
     @Test(expected = FileNotFoundException.class)
-    public void should_not_generate_when_source_directory_does_not_exist() throws Exception {
+    public void should_not_generate_the_registry_class_when_source_directory_does_not_exist() throws Exception {
         RegistryGenerationContext context = iWantToGenerateARegistryClass()
             .called(CLASS_NAME)
             .fromTheFilesUnder(nonExistingDirectory())
@@ -56,8 +56,7 @@ public class RegistryClassCodeGeneratorTest {
     }
 
     @Test
-    @Ignore
-    public void should_not_generate_a_nested_class_for_a_directory_without_matching_files() throws Exception {
+    public void should_not_generate_a_nested_class_for_a_directory_without_accepted_files() throws Exception {
         RegistryGenerationContext context = iWantToGenerateARegistryClass()
             .called(CLASS_NAME)
             .inPackage(CLASS_PACKAGE)
@@ -72,7 +71,7 @@ public class RegistryClassCodeGeneratorTest {
     }
 
     @Test
-    public void should_generate_fields_for_matching_files() throws Exception {
+    public void should_generate_fields_for_accepted_files() throws Exception {
         RegistryGenerationContext context = iWantToGenerateARegistryClass()
             .called(CLASS_NAME)
             .inPackage(CLASS_PACKAGE)
