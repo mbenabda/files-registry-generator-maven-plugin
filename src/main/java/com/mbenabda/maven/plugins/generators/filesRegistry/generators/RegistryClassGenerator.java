@@ -1,49 +1,50 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry.generators;
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.naming.JavaNamingConvention;
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
 import com.mbenabda.maven.plugins.generators.filesRegistry.fieldValue.RemoveExtensionToMakeValue;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
+import java.io.FileFilter;
 import java.nio.file.Path;
 
 class RegistryClassGenerator {
     private static final Modifier[] ROOT_CLASS_MODIFIERS = new Modifier[]{Modifier.PUBLIC, Modifier.FINAL};
     private static final Modifier[] CLASS_MODIFIERS = new Modifier[]{Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
+    private final RegistryGenerationContext context;
 
-    RegistryClassGenerator() {}
+    RegistryClassGenerator(RegistryGenerationContext context) {
+        this.context = context;
+    }
 
-    TypeSpec createClass(RegistryGenerationContext context, String classSimpleName, Path classFeedDirectory) {
-        Modifier[] modifiers = classFeedDirectory.equals(context.getFilesRootDirectory())
-            ? ROOT_CLASS_MODIFIERS
-            : CLASS_MODIFIERS;
+    TypeSpec createClass() {
+        return createClass(
+            ROOT_CLASS_MODIFIERS,
+            context.getRegistrySimpleClassName(),
+            acceptedFilesIn(context.getFilesLocation())
+        );
+    }
 
+    private TypeSpec createClass(Modifier[] modifiers, String className, File[] files) {
         TypeSpec.Builder currentClassBuilder = TypeSpec
-            .classBuilder(classSimpleName)
+            .classBuilder(className)
             .addModifiers(modifiers);
 
-        for (File child : classFeedDirectory.toFile().listFiles()) {
-            Path childPath = child.toPath();
-
-            if (child.isDirectory() && !isSpecialDirectory(classFeedDirectory, childPath)) {
+        for (File child : files) {
+            if (child.isDirectory()) {
                 currentClassBuilder.addType(
-                    new RegistryClassGenerator().createClass(
-                        context,
-                        asClassName(context.getJavaNamingConvention(), childPath),
-                        childPath
+                    createClass(
+                        CLASS_MODIFIERS,
+                        classNameFor(child),
+                        acceptedFilesIn(child)
                     )
                 );
-            } else if (context.getIncludedFilesSpecification().apply(childPath)) {
-                StringFieldGenerator fieldGenerator = new StringFieldGenerator(
-                    context.getJavaNamingConvention(),
-                    new RemoveExtensionToMakeValue(context)
-                );
-
+            } else {
                 currentClassBuilder.addField(
-                    fieldGenerator.createField(childPath)
+                    createField(child)
                 );
             }
         }
@@ -51,16 +52,32 @@ class RegistryClassGenerator {
         return currentClassBuilder.build();
     }
 
-    private boolean isSpecialDirectory(Path parent, Path evaluatedDirectory) {
-        return evaluatedDirectory == parent
-            || evaluatedDirectory.toAbsolutePath().equals(parent.toAbsolutePath()) // the . folder in unix systems
-            || evaluatedDirectory.toAbsolutePath().equals(parent.getParent().toAbsolutePath()); // the .. folder in unix systems
+    private FieldSpec createField(File file) {
+        return new StringFieldGenerator(
+            context.getJavaNamingConvention(),
+            new RemoveExtensionToMakeValue(context)
+        ).createField(file.toPath());
     }
 
-    private String asClassName(JavaNamingConvention namingConvention, Path dir) {
-        String directoryBaseName = FilenameUtils.getBaseName(dir.toFile().toString());
-        return namingConvention
-            .asSimpleClassName(directoryBaseName);
+    private String classNameFor(File dir) {
+        return context
+            .getJavaNamingConvention()
+            .asSimpleClassName(
+                FilenameUtils.getBaseName(dir.toString())
+            );
     }
 
+    private File[] acceptedFilesIn(Path filesLocation) {
+        return acceptedFilesIn(filesLocation.toFile());
+    }
+
+    private File[] acceptedFilesIn(File child) {
+        return child.listFiles(
+            new FileFilter() {
+                public boolean accept(File file) {
+                    return context.accepts(file);
+                }
+            }
+        );
+    }
 }

@@ -14,7 +14,7 @@ public class RemoveExtensionToMakeValue implements FieldValueMaker<String> {
 
     @Override
     public String asFieldValue(Path filePath) {
-        Path relativePathFromRootToChild = context.getFilesRootDirectory().relativize(filePath);
+        Path relativePathFromRootToChild = context.getFilesLocation().relativize(filePath);
         return FilenameUtils.removeExtension(relativePathFromRootToChild.toString());
     }
 }

@@ -9,18 +9,14 @@ import java.io.FileNotFoundException;
 public class RegistryClassCodeGenerator {
 
     public String generateCode(RegistryGenerationContext context) throws FileNotFoundException {
-        if(context.getFilesRootDirectory().toFile().exists()) {
+        if(context.getFilesLocation().toFile().exists()) {
             return asJavaCode(
                 context.getRegistryPackageName(),
-                new RegistryClassGenerator()
-                    .createClass(
-                        context,
-                        context.getRegistrySimpleClassName(),
-                        context.getFilesRootDirectory()
-                    )
+                new RegistryClassGenerator(context)
+                    .createClass()
             );
         } else {
-            throw new FileNotFoundException(context.getFilesRootDirectory().toString());
+            throw new FileNotFoundException(context.getFilesLocation().toString());
         }
     }
 
