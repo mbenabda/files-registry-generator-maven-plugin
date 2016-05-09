@@ -1,8 +1,10 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry.generators;
 
+import com.google.common.base.Predicates;
 import com.mbenabda.maven.plugins.generators.filesRegistry.filters.FilenameHasSuffixPredicate;
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -94,6 +96,30 @@ public class RegistryClassCodeGeneratorTest {
             }, "\n"),
             testableGenerator().generateCode(context)
         );
+    }
+
+
+
+    @Test
+    @Ignore
+    public void what_happens_on_conflict() throws Exception {
+        RegistryGenerationContext context = iWantToGenerateARegistryClass()
+            .called(CLASS_NAME)
+            .inPackage(CLASS_PACKAGE)
+            .fromTheFilesUnder(aDirectoryWithFiles("directory", new String[]{"anImage.jpg", "anImage.png"}))
+            .thatMatch(Predicates.or(
+                new FilenameHasSuffixPredicate(".jpg"),
+                new FilenameHasSuffixPredicate(".png")
+            ))
+            .please();
+
+        throw new NotImplementedException("conflict resolution");
+    }
+
+    @Test
+    @Ignore
+    public void what_happens_on_symbolic_links() throws Exception {
+        throw new NotImplementedException("symbolic links");
     }
 
     private Path aDirectoryWithFiles(String directoryName, String[] fileNames) throws IOException {
