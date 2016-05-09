@@ -1,23 +1,23 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
 
 import com.mbenabda.maven.plugins.generators.filesRegistry.FieldValueMaker;
-import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
+import com.mbenabda.maven.plugins.generators.filesRegistry.JavaNamingConvention;
 import com.squareup.javapoet.FieldSpec;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.lang.model.element.Modifier;
 import java.nio.file.Path;
 
-class FieldGenerator {
-    private final RegistryGenerationContext context;
+class StringFieldGenerator {
     private final FieldValueMaker fieldValueMaker;
+    private final JavaNamingConvention javaNamingConvention;
 
-    FieldGenerator(RegistryGenerationContext context, FieldValueMaker fieldValueMaker) {
-        this.context = context;
+    StringFieldGenerator(JavaNamingConvention javaNamingConvention, FieldValueMaker<String> fieldValueMaker) {
+        this.javaNamingConvention = javaNamingConvention;
         this.fieldValueMaker = fieldValueMaker;
     }
 
-    public FieldSpec generateField(Path fieldFile) {
+    public FieldSpec createField(Path fieldFile) {
         return FieldSpec
                 .builder(String.class, asFieldName(fieldFile))
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
@@ -26,9 +26,8 @@ class FieldGenerator {
     }
 
     private String asFieldName(Path file) {
-        return context
-                .getJavaIdentifierNormalizer()
-                .normalizeMemberIdentifier(
+        return javaNamingConvention
+                .asMemberIdentifier(
                         FilenameUtils.getBaseName(file.toFile().toString())
                 );
     }

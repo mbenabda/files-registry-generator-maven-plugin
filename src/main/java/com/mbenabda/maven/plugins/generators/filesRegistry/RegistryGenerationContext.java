@@ -6,7 +6,7 @@ import org.apache.commons.lang3.Validate;
 import java.nio.file.Path;
 
 public class RegistryGenerationContext {
-    private static final StringToIdentifierConverter STRING_TO_IDENTIFIER_CONVERTER = new StringToIdentifierConverter();
+    private static final JavaNamingConvention NAMING_CONVENTION = new JavaNamingConvention();
     private final Path filesRootDirectory;
     private final Predicate<Path> includedFilesSpecification;
     private final String registrySimpleClassName;
@@ -31,21 +31,22 @@ public class RegistryGenerationContext {
 
     private void validatePackageName(String packageName) {
         Validate.notBlank(packageName);
-        Validate.isTrue(getJavaIdentifierNormalizer().isPackageName(packageName));
+        Validate.isTrue(NAMING_CONVENTION.isPackageName(packageName));
     }
 
     private void validateClassName(String registrySimpleClassName) {
         Validate.notBlank(registrySimpleClassName);
-        Validate.isTrue(getJavaIdentifierNormalizer().isSimpleClassName(registrySimpleClassName));
+        Validate.isTrue(NAMING_CONVENTION.isSimpleClassName(registrySimpleClassName));
     }
 
-    public StringToIdentifierConverter getJavaIdentifierNormalizer() {
-        return STRING_TO_IDENTIFIER_CONVERTER;
-    }
 
 
     public static Builder iWantToGenerateARegistryClass() {
         return new Builder();
+    }
+
+    public JavaNamingConvention getJavaNamingConvention() {
+        return NAMING_CONVENTION;
     }
 
     public static class Builder {

@@ -2,26 +2,15 @@ package com.mbenabda.maven.plugins.generators.filesRegistry;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class StringToIdentifierConverter {
-    public String normalizeMemberIdentifier(String str) {
+public class JavaNamingConvention {
+    public String asMemberIdentifier(String str) {
         return asIdentifier(str);
     }
 
-    public String normalizeClassIdentifier(String str) {
+    public String asSimpleClassName(String str) {
         String identifier = asIdentifier(str);
         String firstChar = "" + identifier.charAt(0);
         return firstChar.toUpperCase() + identifier.substring(1, identifier.length());
-    }
-
-    private static String asIdentifier(String str) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            if (Character.isJavaIdentifierStart(str.charAt(0)) || i > 0 && Character.isJavaIdentifierPart(str.charAt(i)))
-                sb.append(str.charAt(i));
-            else
-                sb.append((int)str.charAt(i));
-        }
-        return sb.toString();
     }
 
     public boolean isSimpleClassName(String simpleClassName) {
@@ -44,5 +33,16 @@ public class StringToIdentifierConverter {
 
     public boolean isPackageName(String packageName) {
         return true;
+    }
+
+    private static String asIdentifier(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            if (Character.isJavaIdentifierStart(str.charAt(0)) || i > 0 && Character.isJavaIdentifierPart(str.charAt(i)))
+                sb.append(str.charAt(i));
+            else
+                sb.append((int)str.charAt(i));
+        }
+        return sb.toString();
     }
 }

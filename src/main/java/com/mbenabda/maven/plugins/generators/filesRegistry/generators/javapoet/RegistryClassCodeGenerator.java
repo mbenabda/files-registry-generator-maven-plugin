@@ -12,8 +12,9 @@ public class RegistryClassCodeGenerator {
         if(context.getFilesRootDirectory().toFile().exists()) {
             return asJavaCode(
                 context.getRegistryPackageName(),
-                new RegistryClassGenerator(context)
-                    .generateClass(
+                new RegistryClassGenerator()
+                    .createClass(
+                        context,
                         context.getRegistrySimpleClassName(),
                         context.getFilesRootDirectory()
                     )

@@ -1,8 +1,8 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.RemoveExtensionToMakeValue;
-import com.mbenabda.maven.plugins.generators.filesRegistry.FieldValueMaker;
+import com.mbenabda.maven.plugins.generators.filesRegistry.JavaNamingConvention;
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
+import com.mbenabda.maven.plugins.generators.filesRegistry.RemoveExtensionToMakeValue;
 import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.io.FilenameUtils;
 
@@ -11,40 +11,39 @@ import java.io.File;
 import java.nio.file.Path;
 
 class RegistryClassGenerator {
-    private static final Modifier[] ROOT_CLASS_MODIFIERS = new Modifier[] {Modifier.PUBLIC, Modifier.FINAL};
-    private static final Modifier[] CLASS_MODIFIERS = new Modifier[] {Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
+    private static final Modifier[] ROOT_CLASS_MODIFIERS = new Modifier[]{Modifier.PUBLIC, Modifier.FINAL};
+    private static final Modifier[] CLASS_MODIFIERS = new Modifier[]{Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
 
-    private final RegistryGenerationContext context;
-    private final FieldValueMaker fieldValueMaker;
+    RegistryClassGenerator() {}
 
-    RegistryClassGenerator(RegistryGenerationContext context) {
-        this.context = context;
-        this.fieldValueMaker = new RemoveExtensionToMakeValue(context);
-    }
-
-    TypeSpec generateClass(String classSimpleName, Path classFeedDirectory) {
+    TypeSpec createClass(RegistryGenerationContext context, String classSimpleName, Path classFeedDirectory) {
         Modifier[] modifiers = classFeedDirectory.equals(context.getFilesRootDirectory())
-                ? ROOT_CLASS_MODIFIERS
-                : CLASS_MODIFIERS;
+            ? ROOT_CLASS_MODIFIERS
+            : CLASS_MODIFIERS;
 
         TypeSpec.Builder currentClassBuilder = TypeSpec
-                .classBuilder(classSimpleName)
-                .addModifiers(modifiers);
+            .classBuilder(classSimpleName)
+            .addModifiers(modifiers);
 
-        for(File child : classFeedDirectory.toFile().listFiles()) {
+        for (File child : classFeedDirectory.toFile().listFiles()) {
             Path childPath = child.toPath();
 
-            if(child.isDirectory() && !isSpecialDirectory(classFeedDirectory, childPath)) {
+            if (child.isDirectory() && !isSpecialDirectory(classFeedDirectory, childPath)) {
                 currentClassBuilder.addType(
-                        new RegistryClassGenerator(context).generateClass(
-                                asClassName(childPath),
-                                childPath
-                        )
+                    new RegistryClassGenerator().createClass(
+                        context,
+                        asClassName(context.getJavaNamingConvention(), childPath),
+                        childPath
+                    )
                 );
-            } else if(context.getIncludedFilesSpecification().apply(childPath)) {
+            } else if (context.getIncludedFilesSpecification().apply(childPath)) {
+                StringFieldGenerator fieldGenerator = new StringFieldGenerator(
+                    context.getJavaNamingConvention(),
+                    new RemoveExtensionToMakeValue(context)
+                );
+
                 currentClassBuilder.addField(
-                        new FieldGenerator(context, fieldValueMaker)
-                                .generateField(childPath)
+                    fieldGenerator.createField(childPath)
                 );
             }
         }
@@ -54,16 +53,14 @@ class RegistryClassGenerator {
 
     private boolean isSpecialDirectory(Path parent, Path evaluatedDirectory) {
         return evaluatedDirectory == parent
-                || evaluatedDirectory.toAbsolutePath().equals(parent.toAbsolutePath()) // the . folder in unix systems
-                || parent.getParent().toAbsolutePath().equals(evaluatedDirectory.toAbsolutePath()); // the .. folder in unix systems
+            || evaluatedDirectory.toAbsolutePath().equals(parent.toAbsolutePath()) // the . folder in unix systems
+            || evaluatedDirectory.toAbsolutePath().equals(parent.getParent().toAbsolutePath()); // the .. folder in unix systems
     }
 
-
-    private String asClassName(Path dir) {
+    private String asClassName(JavaNamingConvention namingConvention, Path dir) {
         String directoryBaseName = FilenameUtils.getBaseName(dir.toFile().toString());
-        return context
-                .getJavaIdentifierNormalizer()
-                .normalizeClassIdentifier(directoryBaseName);
+        return namingConvention
+            .asSimpleClassName(directoryBaseName);
     }
 
 }
