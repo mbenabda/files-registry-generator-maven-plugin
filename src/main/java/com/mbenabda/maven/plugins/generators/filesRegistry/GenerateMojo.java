@@ -27,10 +27,10 @@ public class GenerateMojo extends AbstractMojo {
     private File outputDirectory;
 
     @Parameter(required = true)
-    private String pathToFiles;
+    private String relativeFilesLocation;
 
     @Parameter(required = true)
-    private String filesSuffix;
+    private String filenameSuffix;
 
     @Parameter(defaultValue = "com.mbenabda.filesRegistry")
     private String registryPackageName;
@@ -40,19 +40,17 @@ public class GenerateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        final Path pathToFiles = project.getBasedir().toPath().resolve(this.pathToFiles);
+        final Path filesLocation = project.getBasedir().toPath().resolve(this.relativeFilesLocation);
 
-        if(pathToFiles.toFile().exists()) {
+        if(filesLocation.toFile().exists()) {
             getLog().info(String.format(
                     "Accessing %s to generate the registry class %s at %s",
-                    pathToFiles,
+                    filesLocation,
                     registryPackageName + "." + registryClassName,
                     outputDirectory
             ));
 
-            if(!outputDirectory.exists()) {
-                outputDirectory.mkdirs();
-            }
+            createMissingDirectoriesTo(outputDirectory);
 
             try {
                 FileUtils.writeStringToFile(
@@ -62,8 +60,8 @@ public class GenerateMojo extends AbstractMojo {
                                 iWantToGenerateARegistryClass()
                                         .called(registryClassName)
                                         .inPackage(registryPackageName)
-                                        .fromTheFilesUnder(pathToFiles)
-                                        .thatMatch(new FileHasIncludedSuffixPredicate(filesSuffix))
+                                        .fromTheFilesUnder(filesLocation)
+                                        .thatMatch(new FilenameHasSuffixPredicate(filenameSuffix))
                                         .please()
                         )
                 );
@@ -73,7 +71,13 @@ public class GenerateMojo extends AbstractMojo {
                 throw new MojoExecutionException("", e);
             }
         } else {
-            throw new MojoFailureException("Path " + pathToFiles + " does not exist.");
+            throw new MojoFailureException("Path " + filesLocation + " does not exist.");
+        }
+    }
+
+    private void createMissingDirectoriesTo(File target) {
+        if(!target.exists()) {
+            target.mkdirs();
         }
     }
 

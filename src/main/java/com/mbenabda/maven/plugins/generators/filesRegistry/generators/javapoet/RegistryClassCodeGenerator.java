@@ -4,17 +4,23 @@ import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationCon
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
+import java.io.FileNotFoundException;
+
 public class RegistryClassCodeGenerator {
 
-    public String generateCode(RegistryGenerationContext context) throws Exception {
-        return asJavaCode(
+    public String generateCode(RegistryGenerationContext context) throws FileNotFoundException {
+        if(context.getFilesRootDirectory().toFile().exists()) {
+            return asJavaCode(
                 context.getRegistryPackageName(),
                 new RegistryClassGenerator(context)
-                        .generateClass(
-                                context.getRegistrySimpleClassName(),
-                                context.getFilesRootDirectory()
-                        )
-        );
+                    .generateClass(
+                        context.getRegistrySimpleClassName(),
+                        context.getFilesRootDirectory()
+                    )
+            );
+        } else {
+            throw new FileNotFoundException(context.getFilesRootDirectory().toString());
+        }
     }
 
     private String asJavaCode(String registryPackageName, TypeSpec spec) {

@@ -4,10 +4,10 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
 
-public class BuildFieldValueByRemovingExtension implements FieldValueMaker {
+public class RemoveExtensionToMakeValue implements FieldValueMaker {
     private final RegistryGenerationContext context;
 
-    public BuildFieldValueByRemovingExtension(RegistryGenerationContext context) {
+    public RemoveExtensionToMakeValue(RegistryGenerationContext context) {
         this.context = context;
     }
 

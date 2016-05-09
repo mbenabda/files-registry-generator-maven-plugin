@@ -1,6 +1,6 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.BuildFieldValueByRemovingExtension;
+import com.mbenabda.maven.plugins.generators.filesRegistry.RemoveExtensionToMakeValue;
 import com.mbenabda.maven.plugins.generators.filesRegistry.FieldValueMaker;
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
 import com.squareup.javapoet.TypeSpec;
@@ -19,10 +19,10 @@ class RegistryClassGenerator {
 
     RegistryClassGenerator(RegistryGenerationContext context) {
         this.context = context;
-        this.fieldValueMaker = new BuildFieldValueByRemovingExtension(context);
+        this.fieldValueMaker = new RemoveExtensionToMakeValue(context);
     }
 
-    TypeSpec generateClass(String classSimpleName, Path classFeedDirectory) throws Exception {
+    TypeSpec generateClass(String classSimpleName, Path classFeedDirectory) {
         Modifier[] modifiers = classFeedDirectory.equals(context.getFilesRootDirectory())
                 ? ROOT_CLASS_MODIFIERS
                 : CLASS_MODIFIERS;
