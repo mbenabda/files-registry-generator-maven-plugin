@@ -1,5 +1,6 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry;
+package com.mbenabda.maven.plugins.generators.filesRegistry.fieldValue;
 
+import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
@@ -13,7 +14,7 @@ public class RemoveExtensionToMakeValue implements FieldValueMaker<String> {
 
     @Override
     public String asFieldValue(Path filePath) {
-            Path relativePathFromRootToChild = context.getFilesRootDirectory().relativize(filePath);
-            return FilenameUtils.removeExtension(relativePathFromRootToChild.toString());
+        Path relativePathFromRootToChild = context.getFilesRootDirectory().relativize(filePath);
+        return FilenameUtils.removeExtension(relativePathFromRootToChild.toString());
     }
 }

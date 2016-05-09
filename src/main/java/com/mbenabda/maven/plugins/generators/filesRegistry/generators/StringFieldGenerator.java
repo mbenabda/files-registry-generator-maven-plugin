@@ -1,7 +1,7 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
+package com.mbenabda.maven.plugins.generators.filesRegistry.generators;
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.FieldValueMaker;
-import com.mbenabda.maven.plugins.generators.filesRegistry.JavaNamingConvention;
+import com.mbenabda.maven.plugins.generators.filesRegistry.fieldValue.FieldValueMaker;
+import com.mbenabda.maven.plugins.generators.filesRegistry.naming.JavaNamingConvention;
 import com.squareup.javapoet.FieldSpec;
 import org.apache.commons.io.FilenameUtils;
 
@@ -9,7 +9,7 @@ import javax.lang.model.element.Modifier;
 import java.nio.file.Path;
 
 class StringFieldGenerator {
-    private final FieldValueMaker fieldValueMaker;
+    private final FieldValueMaker<String> fieldValueMaker;
     private final JavaNamingConvention javaNamingConvention;
 
     StringFieldGenerator(JavaNamingConvention javaNamingConvention, FieldValueMaker<String> fieldValueMaker) {

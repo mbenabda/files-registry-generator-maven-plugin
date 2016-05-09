@@ -1,7 +1,8 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry;
 
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet.RegistryClassCodeGenerator;
+import com.mbenabda.maven.plugins.generators.filesRegistry.filters.FilenameHasSuffixPredicate;
+import com.mbenabda.maven.plugins.generators.filesRegistry.generators.RegistryClassCodeGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;

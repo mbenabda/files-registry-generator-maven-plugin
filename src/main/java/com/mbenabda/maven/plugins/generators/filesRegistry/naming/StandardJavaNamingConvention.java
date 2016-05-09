@@ -1,8 +1,9 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry;
+package com.mbenabda.maven.plugins.generators.filesRegistry.naming;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class JavaNamingConvention {
+public class StandardJavaNamingConvention implements JavaNamingConvention {
+
     public String asMemberIdentifier(String str) {
         return asIdentifier(str);
     }

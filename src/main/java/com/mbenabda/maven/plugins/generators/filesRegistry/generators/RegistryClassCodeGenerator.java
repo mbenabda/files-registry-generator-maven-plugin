@@ -1,4 +1,4 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
+package com.mbenabda.maven.plugins.generators.filesRegistry.generators;
 
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
 import com.squareup.javapoet.JavaFile;

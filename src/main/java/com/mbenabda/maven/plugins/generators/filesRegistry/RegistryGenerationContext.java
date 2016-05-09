@@ -1,12 +1,14 @@
 package com.mbenabda.maven.plugins.generators.filesRegistry;
 
 import com.google.common.base.Predicate;
+import com.mbenabda.maven.plugins.generators.filesRegistry.naming.StandardJavaNamingConvention;
+import com.mbenabda.maven.plugins.generators.filesRegistry.naming.JavaNamingConvention;
 import org.apache.commons.lang3.Validate;
 
 import java.nio.file.Path;
 
 public class RegistryGenerationContext {
-    private static final JavaNamingConvention NAMING_CONVENTION = new JavaNamingConvention();
+    private static final JavaNamingConvention NAMING_CONVENTION = new StandardJavaNamingConvention();
     private final Path filesRootDirectory;
     private final Predicate<Path> includedFilesSpecification;
     private final String registrySimpleClassName;
@@ -56,8 +58,8 @@ public class RegistryGenerationContext {
 
         private Path filesRootDirectory;
         private Predicate<Path> includedFilesSpecification = TRUE_PREDICATE;
-        private String registryPackageName;
-        private String registrySimpleClassName;
+        private String registryPackageName = "com.mbenabda.filesRegistry";
+        private String registrySimpleClassName = "FilesRegistry";
 
         public Builder called(String registrySimpleClassName) {
             this.registrySimpleClassName = registrySimpleClassName;

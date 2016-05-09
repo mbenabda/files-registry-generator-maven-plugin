@@ -1,4 +1,4 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry;
+package com.mbenabda.maven.plugins.generators.filesRegistry.fieldValue;
 
 import java.nio.file.Path;
 

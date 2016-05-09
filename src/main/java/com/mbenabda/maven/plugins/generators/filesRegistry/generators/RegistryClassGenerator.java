@@ -1,8 +1,8 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
+package com.mbenabda.maven.plugins.generators.filesRegistry.generators;
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.JavaNamingConvention;
+import com.mbenabda.maven.plugins.generators.filesRegistry.naming.JavaNamingConvention;
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
-import com.mbenabda.maven.plugins.generators.filesRegistry.RemoveExtensionToMakeValue;
+import com.mbenabda.maven.plugins.generators.filesRegistry.fieldValue.RemoveExtensionToMakeValue;
 import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.io.FilenameUtils;
 

@@ -1,6 +1,6 @@
-package com.mbenabda.maven.plugins.generators.filesRegistry.generators.javapoet;
+package com.mbenabda.maven.plugins.generators.filesRegistry.generators;
 
-import com.mbenabda.maven.plugins.generators.filesRegistry.FilenameHasSuffixPredicate;
+import com.mbenabda.maven.plugins.generators.filesRegistry.filters.FilenameHasSuffixPredicate;
 import com.mbenabda.maven.plugins.generators.filesRegistry.RegistryGenerationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
