@@ -75,7 +75,8 @@ class RegistryClassGenerator {
         return child.listFiles(
             new FileFilter() {
                 public boolean accept(File file) {
-                    return context.accepts(file);
+                    boolean isVisibleDirectory = file.isDirectory() && !file.isHidden();
+                    return context.accepts(file) || isVisibleDirectory;
                 }
             }
         );
