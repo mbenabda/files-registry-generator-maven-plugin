@@ -21,12 +21,6 @@
     </properties>
 
     <distributionManagement>
-        <snapshotRepository>
-            <uniqueVersion>true</uniqueVersion>
-            <id>files-registry-maven-plugin-snapshots</id>
-            <url>http://maven.mbenabda.com/repository/files-registry-maven-plugin-snapshots/</url>
-        </snapshotRepository>
-
         <repository>
             <uniqueVersion>true</uniqueVersion>
             <id>files-registry-maven-plugin-releases</id>
