@@ -9,7 +9,7 @@ The plugin is not yet on maven central, but you can add the following repositoy 
 ```xml
     <pluginRepositories>
         <pluginRepository>
-            <id>files-registry-maven-plugin-snapshots</id>
+            <id>files-registry-maven-plugin-releases</id>
             <url>http://maven.mbenabda.com/repository/files-registry-maven-plugin-releases/</url>
         </pluginRepository>
     </pluginRepositories>
