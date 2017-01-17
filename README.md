@@ -1,10 +1,7 @@
 Generate a java registry class hierarchy from files under a given directory
 
-[![Build Status](http://ci.mbenabda.com/api/v1/teams/main/pipelines/files-registry-maven-plugin-master/jobs/files-registry-maven-plugin-master/badge)](http://ci.mbenabda.com/teams/main/pipelines/files-registry-maven-plugin-master)
-
-
 Usage
-=====
+-----
 The plugin is not yet on maven central, but you can add the following repositoy declaration in your ```pom.xml```:
 ```xml
     <pluginRepositories>
@@ -45,3 +42,7 @@ and then, configure the plugin as such:
         <plugins>
  <build>
 ```
+
+TODO
+----
+* conflict resolution (ie: what happens when 2 files of the same folder reduce to the same java identifier)
