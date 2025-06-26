@@ -16,7 +16,7 @@
         <commons-io.version>2.4</commons-io.version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <javapoet.version>1.4.0</javapoet.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.1</junit.version>
         <maven.plugin.version>3.4</maven.plugin.version>
     </properties>
 
